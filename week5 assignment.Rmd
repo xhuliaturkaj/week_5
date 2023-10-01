@@ -8,6 +8,7 @@ output: html_document
 ## Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above.
 You’re encouraged to use a “wide” structure so that you can practice tidying and transformations. 
 
+# Load the libraries 
 
 ```{r}
 # Load the libraries 
@@ -18,10 +19,10 @@ library(scales)
 ```
 
 
-
+#Create the dataframe
 
 ```{r}
-#Create the dataframe
+
 
 
 flights <- rbind(c("Airline", "Status", "Los Angeles", "Phoenix", "San Diego", "San Francisco", "Seattle"),
@@ -34,6 +35,7 @@ write.table(flights, file = "week5flights.csv", sep = ",", col.names=F, row.name
 
 ```
 
+# Read the csv file from github
 ```{r}
 #Read the csv file 
 
@@ -42,7 +44,7 @@ airlines <- read.csv("https://raw.githubusercontent.com/xhuliaturkaj/week_5/main
 airlines
 ```
 
-##Structuring data 
+## Structuring data 
 
 ```{r}
  # First start by filling the Airline Name in the rows where it is missing
@@ -83,7 +85,10 @@ ggplot(delay_airlines, aes(x = Airline, y = Proportion, fill = Status)) +
        title = "Proportion of On-time and Delayed Flights for Each Airline") +
   scale_fill_manual(values = c("on time" = "green", "delayed" = "red"))
 ```
-The comparison indicates that ALASKA  airline has an 86.7% on-time arrival rate and a 13.3% delay rate, whereas AM WEST airline demonstrates a higher on-time arrival rate of 89.1% and a lower delay rate of 10.9%, suggesting AM WEST is relatively more punctual in its services.
+
+
+
+#### The comparison indicates that ALASKA  airline has an 86.7% on-time arrival rate and a 13.3% delay rate, whereas AM WEST airline demonstrates a higher on-time arrival rate of 89.1% and a lower delay rate of 10.9%, suggesting AM WEST is relatively more punctual in its services.
 
 
 Next I would like to explore how these rates vary by city. 
@@ -117,7 +122,7 @@ ggplot(city_proportions, aes(x = City, y = Proportion, fill = Status)) +
 
 ```
 
-#Conclusion
+## Conclusion
 
-As we can see from the visual representation there are significant differences in the delay/on-time arrival  rates between the two airlines in several cities, with AM WEST typically showing a greater percentage of flights arriving on time, particularly in Phoenix with 95% (on time arrivals) , while Alaska Airlines performs exceptionally well in locations such as Phoenix (92% on time arrivals) and San Diego (85% on time arrivals). San Francisco and Seattle seemed to be cities with a high arrival delay rate for both airlines but specifically for AM WEST. A statistical analysis is essential  to determine whether the observed differences in arrival times are statistically significant.
+#### As we can see from the visual representation there are significant differences in the delay/on-time arrival  rates between the two airlines in several cities, with AM WEST typically showing a greater percentage of flights arriving on time, particularly in Phoenix with 95% (on time arrivals) , while Alaska Airlines performs exceptionally well in locations such as Phoenix (92% on time arrivals) and San Diego (85% on time arrivals). San Francisco and Seattle seemed to be cities with a high arrival delay rate for both airlines but specifically for AM WEST. A statistical analysis is essential  to determine whether the observed differences in arrival times are statistically significant.
 
