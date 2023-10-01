@@ -37,7 +37,7 @@ write.table(flights, file = "week5flights.csv", sep = ",", col.names=F, row.name
 ```{r}
 #Read the csv file 
 
-airlines <- read.csv("week5flights.csv")
+airlines <- read.csv("https://raw.githubusercontent.com/xhuliaturkaj/week_5/main/week5flights.csv")
 
 airlines
 ```
