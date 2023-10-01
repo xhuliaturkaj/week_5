@@ -1,0 +1,123 @@
+---
+title: "Week 5 Assignment"
+author: "Xhulia Turkaj"
+date: "2023-10-01"
+output: html_document
+---
+
+## Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above.
+You’re encouraged to use a “wide” structure so that you can practice tidying and transformations. 
+
+
+```{r}
+# Load the libraries 
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(scales)
+```
+
+
+
+
+```{r}
+#Create the dataframe
+
+
+flights <- rbind(c("Airline", "Status", "Los Angeles", "Phoenix", "San Diego", "San Francisco", "Seattle"),
+             c("ALASKA", "on time", 497, 221, 212, 503, 1841),
+             c(NA, "delayed", 62, 12, 20, 102, 305),
+             c("AM WEST", "on time", 694, 4840, 383, 320, 201),
+             c(NA, "delayed", 117, 415, 65, 129, 61))
+
+write.table(flights, file = "week5flights.csv", sep = ",", col.names=F, row.names=F)
+
+```
+
+```{r}
+#Read the csv file 
+
+airlines <- read.csv("week5flights.csv")
+
+airlines
+```
+
+##Structuring data 
+
+```{r}
+ # First start by filling the Airline Name in the rows where it is missing
+airlines <- airlines %>%
+  fill(Airline, .direction = "down")
+airlines
+```
+
+```{r}
+#Next use pivot longer to reshape the dataframe
+airlines_long <- airlines %>%
+  pivot_longer(cols = -c(Airline, Status), names_to = "City", values_to = "Count")
+airlines_long
+```
+##  Perform analysis to compare the arrival delays for the two airlines.
+
+Let's begin by investigating the delays for both airlines
+```{r}
+# I will summarize the Status counts grouping by Airline
+
+delay_airlines <- airlines_long %>%
+  group_by(Airline, Status) %>%
+  summarize(Total = sum(Count, na.rm = TRUE)) %>%
+  mutate(Proportion = Total / sum(Total))
+
+print(delay_airlines)
+
+```
+Next I will visualize the information above 
+
+```{r}
+
+ggplot(delay_airlines, aes(x = Airline, y = Proportion, fill = Status)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  geom_text(aes(label = percent(Proportion)), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(y = "Proportion of Flights", 
+       title = "Proportion of On-time and Delayed Flights for Each Airline") +
+  scale_fill_manual(values = c("on time" = "green", "delayed" = "red"))
+```
+The comparison indicates that ALASKA  airline has an 86.7% on-time arrival rate and a 13.3% delay rate, whereas AM WEST airline demonstrates a higher on-time arrival rate of 89.1% and a lower delay rate of 10.9%, suggesting AM WEST is relatively more punctual in its services.
+
+
+Next I would like to explore how these rates vary by city. 
+
+```{r}
+
+city_proportions <- airlines_long %>%
+  group_by(Airline, City, Status) %>%
+  summarise(Count = sum(Count, na.rm = TRUE), .groups = 'drop') %>%
+  group_by(Airline, City) %>%
+  mutate(Total = sum(Count), Proportion = Count / Total) %>%
+  ungroup()
+
+city_proportions
+
+```
+Let's use  city_proportions that I created above to visualize these proportions 
+
+```{r}
+ggplot(city_proportions, aes(x = City, y = Proportion, fill = Status)) +
+  geom_bar(stat = "identity", position = "dodge", show.legend = TRUE) +
+  facet_wrap(~Airline, scales = "free_y") +
+  labs(y = "Proportion of Flights",
+       x = "City",
+       title = "Proportion of On-time and Delayed Flights for Each Airline by City") +
+  scale_fill_manual(values = c("on time" = "green", "delayed" = "red")) +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_dodge(width = 0.9), vjust = -0.25) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+#Conclusion
+
+As we can see from the visual representation there are significant differences in the delay/on-time arrival  rates between the two airlines in several cities, with AM WEST typically showing a greater percentage of flights arriving on time, particularly in Phoenix with 95% (on time arrivals) , while Alaska Airlines performs exceptionally well in locations such as Phoenix (92% on time arrivals) and San Diego (85% on time arrivals). San Francisco and Seattle seemed to be cities with a high arrival delay rate for both airlines but specifically for AM WEST. A statistical analysis is essential  to determine whether the observed differences in arrival times are statistically significant.
+
